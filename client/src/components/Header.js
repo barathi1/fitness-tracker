@@ -27,9 +27,24 @@ export default function Header() {
           <Navbar.Collapse id="responsive-navbar-nav" className="justify-content-end">
             <Nav >
               {/* use eventKey to show navbar style from react bootstrap */}
+              <Nav.Link as={Link} to="/dashboard" eventKey="1" >Dashboard</Nav.Link>
+              <Nav.Link as={Link} to="/workout" eventKey="2">Workout Tracker</Nav.Link>
+              <Nav.Link as={Link} to="/nutrition" eventKey="1" >Nutrition Tracker</Nav.Link>
+              <Nav.Link as={Link} to="/water" eventKey="2">Water Tracker</Nav.Link>
+              <Nav.Link as={Link} to="/sleep" eventKey="1" >Sleep Tracker</Nav.Link>
+              <Nav.Link as={Link} to="/goals" eventKey="2">Goals</Nav.Link>
+
+              
+              <Nav.Link as={Link} to="/analytics" eventKey="1" >Progress Analytics</Nav.Link>
+              <Nav.Link as={Link} to="/reminders" eventKey="2">Reminders</Nav.Link>
+              <Nav.Link as={Link} to="/library" eventKey="1" >Fitness Library</Nav.Link>
+              <Nav.Link as={Link} to="/plans" eventKey="2">Personalized Plans</Nav.Link>
+              
+              <Nav.Link as={Link} to="/profile" eventKey="1" >Profile</Nav.Link>
+
               <Nav.Link as={Link} to="/exercise" eventKey="1" >Exercise</Nav.Link>
               <Nav.Link as={Link} to="/history" eventKey="2">History</Nav.Link>
-              <Nav.Link onClick={Auth.logout} >Logout </Nav.Link>
+              <Nav.Link onClick={Auth.logout}  className="logout-nav" >Logout </Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </>) :

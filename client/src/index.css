@@ -1,5 +1,5 @@
 :root {
-  --main-color: #b3f12c;
+  --main-color: #0bf665;
 }
 
 body {
@@ -56,8 +56,22 @@ code {
   color: white;
 }
 
+.logout-nav{
+  background-color: red;
+  border-radius: 10px;
+  /* padding: 3px; */
+}
+.logout-nav:hover{
+  background-color: rgba(255, 0, 0, 0.316);
+  border-radius: 10px;
+  /* padding: 3px; */ 
+}
+
 .nav-link:hover {
   color: var(--main-color);
+  transform: scale(1.1);
+  background-color: #0bf6652f;
+  border-radius: 10px;
 }
 
 /* --------------------------------- 2. home page---------------------------------  */
@@ -377,3 +391,65 @@ code {
 .react-confirm-alert-button-group button:last-child {
   background-color: red;
 }
+
+
+
+
+
+/*  workout  */
+.workout-card {
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.workout-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.btn-hover {
+  transition: background-color 0.3s ease, transform 0.2s;
+}
+
+.btn-hover:hover {
+  background-color: #0056b3 !important;
+  transform: translateY(-3px);
+}
+
+
+
+
+/* water  */
+
+.water-card {
+  width: 400px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #caf0f8, #90e0ef);
+  transition: transform 0.3s ease-in-out;
+}
+
+
+
+.water-card:hover {
+  transform: scale(1.05);
+}
+
+button {
+  font-size: 16px;
+}
+
+/*  */
+
+.hover-effect {
+  transition: transform 0.3s ease-in-out;
+}
+.hover-effect:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.2);
+}
+
+
+.card:hover {
+  transform: scale(1.05);
+  transition: 0.3s ease-in-out;
+}
+

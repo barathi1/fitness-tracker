@@ -67,7 +67,7 @@ export default function History() {
 
   return (
     <div className='history'>
-      <Header />
+      {/* <Header /> */}
       <div className="d-flex flex-column align-items-center">
         <h2 className='title'>History</h2>
         {exerciseData.length ?

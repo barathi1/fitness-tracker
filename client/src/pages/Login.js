@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { loginUser } from "../utils/API";
 import Auth from "../utils/auth";
 import Header from "../components/Header";
@@ -9,6 +9,7 @@ export default function Login() {
   const [showAlert, setShowAlert] = useState(false);
 
   const loggedIn = Auth.loggedIn();
+  const navigate = useNavigate()
 
   // update state based on form input changes
   const handleChange = (event) => {
@@ -34,8 +35,10 @@ export default function Login() {
 
       // use authentication function
       const { token, user } = await response.json();
-      Auth.login(token);
+      Auth.login(token,user);
       console.log(user);
+      navigate("/dashboard")
+    
     } catch (err) {
       console.error(err);
       setShowAlert(true);
@@ -50,12 +53,12 @@ export default function Login() {
 
   // If the user is logged in, redirect to the home page
   if (loggedIn) {
-    return <Navigate to="/" />;
+    return <Navigate to="/dashboard" />;
   }
 
   return (
     <div className="signup d-flex flex-column align-items-center justify-content-center text-center">
-      <Header />
+      {/* <Header /> */}
       <form onSubmit={handleFormSubmit} className="signup-form d-flex flex-column">
         {/* --------------------email-------------------- */}
         <label htmlFor="email">Email</label>

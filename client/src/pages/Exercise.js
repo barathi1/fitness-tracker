@@ -18,7 +18,7 @@ export default function Exercise() {
 
   return (
     <div>
-      <Header />
+      {/* <Header /> */}
       <div className="exercise d-flex flex-column align-items-center">
         <h2 className='title'>Add Exercise</h2>
         <div>

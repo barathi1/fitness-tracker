@@ -7,10 +7,14 @@ import Header from "../components/Header";
 export default function Home() {
   const navigate = useNavigate();
   const loggedIn = Auth.loggedIn()
+  
+  if(loggedIn){
+         navigate("/dashboard")
+  }
 
   return (
     <div className="homepage">
-      <Header />
+      {/* <Header /> */}
       <Container className="home d-flex flex-column align-items-center justify-content-center flex-wrap text-center">
         <h1 className="home-title">Your Daily Workout Partner</h1>
         <p className="home-text">

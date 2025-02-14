@@ -99,7 +99,7 @@ export default function SingleExercise() {
 
     return (
         <div className={type === "cardio" ? "single-cardio" : "single-resistance"}>
-            <Header />
+            {/* <Header /> */}
             <h2 className='title text-center'>History</h2>
             <div className="single-exercise d-flex flex-column align-items-center text-center">
                 {type === "cardio" && (<div className='cardio-div '>

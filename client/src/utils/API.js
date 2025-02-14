@@ -82,3 +82,25 @@ export const deleteResistance = (resistanceId, token) => {
     }
   })
 }
+
+export const updateUser = (Id, data) => {
+  return fetch(`/api/user/update/${Id}`, {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body:JSON.stringify(data)
+  })
+}
+
+export const createMeal = ( data) => {
+  return fetch(`/api/meal`, {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body:JSON.stringify(data)
+  })
+}
+
+// http://localhost:3001/api/meal

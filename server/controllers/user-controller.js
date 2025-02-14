@@ -46,4 +46,45 @@ module.exports = {
     const token = signToken(user);
     res.json({ token, user });
   },
+
+
+  async upadeteuser (req, res)  {
+    const { id } = req.params;
+    const { username, email } = req.body;
+
+    console.log(id,req.body);
+      
+  
+    try {
+      // Check if username or email already exists
+      const existingUser = await User.findOne({
+        $or: [{ username }, { email }],
+        _id: { $ne: id }, // Exclude current user from check
+      });
+  
+      if (existingUser) {
+        return res.status(400).json({
+          message: "Username or email already taken",
+        });
+      }
+  
+      // Update user
+      const updatedUser = await User.findByIdAndUpdate(
+        id,
+        { username, email },
+        { new: true, runValidators: true }
+      );
+  
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      res.json({
+        message: "User updated successfully",
+        user: updatedUser,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  }
 };

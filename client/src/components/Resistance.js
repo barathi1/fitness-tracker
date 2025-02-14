@@ -84,7 +84,7 @@ export default function Resistance() {
 
     return (
         <div className='resistance'>
-            <Header />
+            {/* <Header /> */}
             <div className="d-flex flex-column align-items-center">
                 <h2 className='title text-center'>Add Exercise</h2>
                 <form className='resistance-form d-flex flex-column' onSubmit={handleResistanceSubmit}>

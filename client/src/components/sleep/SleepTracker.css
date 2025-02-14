@@ -1,0 +1,37 @@
+.sleep-tracker {
+    background-color: #f4f6f9;
+    min-height: 100vh;
+    padding-bottom: 50px;
+  }
+  
+  .hero-section {
+    background: url("https://source.unsplash.com/1600x600/?sleep,night") center/cover;
+    text-align: center;
+    padding: 100px 20px;
+    color: white;
+    font-weight: bold;
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+  }
+  
+  .hero-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .hero-section p {
+    font-size: 1.2rem;
+  }
+  
+  .sleep-card {
+    background: linear-gradient(135deg, #5a98f2, #3c67e3);
+    color: white;
+    border-radius: 12px;
+    text-align: center;
+    padding: 20px;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .sleep-card:hover {
+    transform: scale(1.05);
+  }
+  
