@@ -36,12 +36,24 @@ module.exports = {
   },
 
  
-  getMealById({ params }, res) {
+ async getMealById({ params }, res) {
+
+  console.log("fgfgrs");
+  
+
+    const Meals = await Meal.find({userId:params.id})
+
+   return res.status(200).json(Meals)
     
   },
 
-  deleteMeal({ params }, res) {
 
+
+async  deleteMeal({ params }, res) {
+
+    const Meals = await Meal.findByIdAndDelete(params.id)
+
+    return res.status(200).json(Meals)
  
   }
 };

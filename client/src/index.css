@@ -9,6 +9,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* background-color: #1b1d1f33; */
 }
 
 code {
@@ -53,7 +54,7 @@ code {
   text-align: right;
   margin-right: 5px;
   font-weight: 500;
-  color: white;
+  /* color: rgb(18, 16, 16); */
 }
 
 .logout-nav{

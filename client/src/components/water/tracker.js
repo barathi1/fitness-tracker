@@ -1,61 +1,72 @@
-import React, { useState } from "react";
-import { Container, Card, Button, ProgressBar, Alert } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Container, Typography, Button, CircularProgress, Snackbar } from "@mui/material";
+import "./WaterTracker.css";
 
 const WaterTracker = () => {
-  const dailyGoal = 8; // Daily goal: 8 glasses
   const [waterCount, setWaterCount] = useState(0);
-  const [showAlert, setShowAlert] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  
+  const userId = JSON.parse(localStorage.getItem("user"))?._id || "testUser";
 
-  const addWater = () => {
-    if (waterCount < dailyGoal) {
-      setWaterCount(waterCount + 1);
+  useEffect(() => {
+    fetchWaterIntake();
+  }, []);
+
+  const fetchWaterIntake = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`/api/water/${userId}`);
+      setWaterCount(response.data.waterCount);
+    } catch (error) {
+      console.error("Error fetching water intake", error);
     }
-    if (waterCount + 1 === dailyGoal) {
-      setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 3000);
-    }
+    setLoading(false);
   };
 
-  const resetWater = () => {
-    setWaterCount(0);
+  const addWater = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post("http://localhost:3001/api/water", { userId });
+      setWaterCount(response.data.waterCount);
+      setMessage(response.data.message);
+    } catch (error) {
+      console.error("Error adding water", error);
+    }
+    setLoading(false);
+  };
+
+  const resetWater = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.delete(`/api/water/reset/${userId}`);
+      setWaterCount(response.data.waterCount);
+      setMessage(response.data.message);
+    } catch (error) {
+      console.error("Error resetting water intake", error);
+    }
+    setLoading(false);
   };
 
   return (
-    <Container className="d-flex justify-content-center align-items-center vh-100">
-      <Card className="text-center p-4 shadow-lg water-card">
-        <Card.Body>
-          <h2 className="mb-4 text-primary">💧 Water Tracker</h2>
-          <h5>Stay Hydrated, Stay Healthy!</h5>
-
-          <ProgressBar
-            now={(waterCount / dailyGoal) * 100}
-            label={`${waterCount}/${dailyGoal} glasses`}
-            className="my-4"
-            variant="info"
-            animated
-          />
-
-          {showAlert && (
-            <Alert variant="success" className="mt-3">
-              🎉 Great job! You've reached your daily water goal!
-            </Alert>
-          )}
-
-          <div className="d-flex justify-content-center gap-3">
-            <Button variant="primary" onClick={addWater} disabled={waterCount >= dailyGoal}>
-              + Add Water
-            </Button>
-            <Button variant="danger" onClick={resetWater}>
-              Reset
-            </Button>
-          </div>
-
-          <Card.Footer className="mt-3 text-muted">
-            💡 Drinking enough water helps improve energy & focus!
-          </Card.Footer>
-        </Card.Body>
-      </Card>
+    <Container maxWidth="sm" className="tracker-container">
+      <Typography variant="h4" className="title">Water Intake Tracker</Typography>
+      <div className="bottle-container">
+        <div className="bottle">
+          <div className="water" style={{ height: `${(waterCount / 8) * 100}%` }}></div>
+        </div>
+      </div>
+      <Typography variant="h6" className="intake-text">
+        Today's Intake: {loading ? <CircularProgress size={20} /> : `${waterCount} / 8`}
+      </Typography>
+      <Button variant="contained" color="primary" onClick={addWater} disabled={loading || waterCount >= 8} className="action-button">
+        Add Water
+      </Button>
+      <Button variant="outlined" color="secondary" onClick={resetWater} disabled={loading || waterCount === 0} className="action-button">
+        Reset
+      </Button>
+      <Snackbar open={Boolean(message)} autoHideDuration={3000} onClose={() => setMessage("")} message={message} />
     </Container>
   );
 };

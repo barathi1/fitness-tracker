@@ -1,9 +1,11 @@
-import React from "react";
-import { Navbar, Nav } from "react-bootstrap";
+import React, { useState } from "react";
+import { Navbar, Nav, Button } from "react-bootstrap";
 // cant use <a> in react, instead, use <link> from react router dom
 import { Link, useLocation } from "react-router-dom";
 import Auth from "../utils/auth"
 import heart from "../assets/images/heart.png"
+
+// import { setDefaultLocale } from "react-datepicker";
 
 export default function Header() {
 
@@ -12,7 +14,6 @@ export default function Header() {
   const isHomePage = location.pathname === '/';
   const isLoginPage = location.pathname === '/login';
   const isSignupPage = location.pathname === '/signup';
-
 
   return (
 
@@ -53,6 +54,11 @@ export default function Header() {
           <img alt="heart" style={{ display: "inline" }} src={heart} className="heart-icon" />
           FitTrack
         </Navbar.Brand>)}
+
+     
+
+
+    
     </Navbar >
   );
 }

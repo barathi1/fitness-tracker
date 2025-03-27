@@ -1,38 +1,54 @@
-import React, { useState } from "react";
-import { Container, Row, Col, Card, Form, Carousel } from "react-bootstrap";
-
-import strengthTrainning from "../../assets/images/3304470.jpg"
-
-const fitnessResources = [
-  { id: 1, title: "Strength Training", image: strengthTrainning, description: "Build muscle with expert-guided strength training exercises." },
-  { id: 2, title: "Cardio Workouts", image: "/images/cardio.jpg", description: "Improve endurance and heart health with top cardio routines." },
-  { id: 3, title: "Yoga & Meditation", image: "/images/yoga.jpg", description: "Enhance flexibility and mental well-being through yoga." },
-  { id: 4, title: "Healthy Nutrition", image: "/images/nutrition.jpg", description: "Discover balanced diets and healthy eating habits." },
-];
-
-const featuredWorkouts = [
-  { id: 1, title: "HIIT Blast", image: "/images/hiit.jpg" },
-  { id: 2, title: "Full-Body Workout", image: "/images/fullbody.jpg" },
-  { id: 3, title: "Core Strength", image: "/images/core.jpg" },
-];
+import React, { useState, useEffect } from "react";
+import { Container, Row, Col, Card, Form, Carousel, Spinner } from "react-bootstrap";
+import axios from "axios";
 
 const FitnessLibrary = () => {
   const [search, setSearch] = useState("");
+  const [exercises, setExercises] = useState([]);
+  const [featured, setFeatured] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredResources = fitnessResources.filter(resource =>
-    resource.title.toLowerCase().includes(search.toLowerCase())
+  useEffect(() => {
+    const fetchWorkouts = async () => {
+      try {
+        const options = {
+          method: "GET",
+          url: "https://exercisedb.p.rapidapi.com/exercises",
+          headers: {
+            "X-RapidAPI-Key": "a2c7debdffmsh26596f8a7f483dep19f5e2jsnc2d3a7d3afd8", // Replace with your API Key
+            "X-RapidAPI-Host": "exercisedb.p.rapidapi.com",
+          },
+        };
+
+        const response = await axios.request(options);
+
+        console.log(response);
+        
+        setExercises(response.data.slice(0, 20)); // Limit to 20 exercises
+        setFeatured(response.data.slice(0, 5)); // First 5 for the carousel
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching exercises:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchWorkouts();
+  }, []);
+
+  const filteredExercises = exercises.filter((exercise) =>
+    exercise.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <Container className="mt-5">
-      {/* Header */}
       <h2 className="text-center mb-4 text-primary fw-bold">🏋️‍♂️ Fitness Library</h2>
-      
+
       {/* Search Bar */}
       <Form.Group className="mb-4">
-        <Form.Control 
-          type="text" 
-          placeholder="Search workouts, nutrition tips..." 
+        <Form.Control
+          type="text"
+          placeholder="Search workouts..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="shadow-sm"
@@ -40,26 +56,38 @@ const FitnessLibrary = () => {
       </Form.Group>
 
       {/* Featured Workouts Carousel */}
-      <Carousel className="mb-5 shadow-lg rounded">
-        {featuredWorkouts.map((workout) => (
-          <Carousel.Item key={workout.id}>
-            <img className="d-block w-100 rounded" src={workout.image} alt={workout.title} style={{ height: "400px", objectFit: "cover" }} />
-            <Carousel.Caption className="bg-dark bg-opacity-50 p-2 rounded">
-              <h5>{workout.title}</h5>
-            </Carousel.Caption>
-          </Carousel.Item>
-        ))}
-      </Carousel>
+      {loading ? (
+        <div className="text-center">
+          <Spinner animation="border" />
+        </div>
+      ) : (
+        <Carousel className="mb-5 shadow-lg rounded">
+          {featured.map((workout) => (
+            <Carousel.Item key={workout.id}>
+              <img
+                className="d-block w-100 rounded"
+                src={workout.gifUrl}
+                alt={workout.name}
+                style={{ height: "400px", objectFit: "cover" }}
+              />
+              <Carousel.Caption className="bg-dark bg-opacity-50 p-2 rounded">
+                <h5>{workout.name}</h5>
+              </Carousel.Caption>
+            </Carousel.Item>
+          ))}
+        </Carousel>
+      )}
 
       {/* Fitness Categories */}
       <Row>
-        {filteredResources.map((resource) => (
-          <Col md={6} lg={3} key={resource.id} className="mb-4">
+        {filteredExercises.map((exercise) => (
+          <Col md={6} lg={3} key={exercise.id} className="mb-4">
             <Card className="h-100 shadow-sm border-0 rounded-lg hover-effect">
-              <Card.Img variant="top" src={resource.image} style={{ height: "180px", objectFit: "cover" }} />
+              <Card.Img variant="top" src={exercise.gifUrl} style={{ height: "180px", objectFit: "cover" }} />
               <Card.Body>
-                <Card.Title className="text-primary fw-bold">{resource.title}</Card.Title>
-                <Card.Text>{resource.description}</Card.Text>
+                <Card.Title className="text-primary fw-bold">{exercise.name}</Card.Title>
+                <Card.Text>Target: {exercise.target}</Card.Text>
+                <Card.Text>Equipment: {exercise.equipment}</Card.Text>
               </Card.Body>
             </Card>
           </Col>

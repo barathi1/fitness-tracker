@@ -1,0 +1,43 @@
+.tracker-container {
+    text-align: center;
+    margin-top: 2rem;
+  }
+  
+  .title {
+    margin-bottom: 1rem;
+    font-weight: bold;
+  }
+  
+  .bottle-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  
+  .bottle {
+    width: 150px;
+    height: 300px;
+    border: 5px solid #2196f3;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(to bottom, #e3f2fd, #90caf9);
+  }
+  
+  .water {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: #2196f3;
+    transition: height 0.5s ease-in-out;
+  }
+  
+  .intake-text {
+    margin: 10px 0;
+    font-size: 18px;
+  }
+  
+  .action-button {
+    margin: 10px;
+  }
+  

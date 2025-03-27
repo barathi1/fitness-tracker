@@ -25,12 +25,15 @@ import Reminders from "./components/remainder/remainder";
 import FitnessLibrary from "./components/library/library";
 import PersonalizedPlans from "./components/personalisedplans/PersonalizedPlans";
 import Profile from "./pages/Profile";
+import ReminderApp from "./components/sleep/reaminderAlarm";
+
 
 
 function App() {
   return (
     <Router>
       <Header/>
+      <ReminderApp/>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<Signup />} />
@@ -41,7 +44,6 @@ function App() {
         <Route path="/exercise/cardio" element={<Cardio />} />
         <Route path="/exercise/resistance" element={<Resistance />} />
       
-
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/workout" element={<WorkoutTracker />} />
         <Route path="/nutrition" element={<NutritionTracker />} />
@@ -56,6 +58,9 @@ function App() {
         <Route path="/library" element={<FitnessLibrary />} />
         <Route path="/plans" element={<PersonalizedPlans />} />
         <Route path="/profile" element={<Profile />} />
+    
+
+        {/* ProgressAnalytics */}
 
         
         <Route path="*" element={<Error />} />

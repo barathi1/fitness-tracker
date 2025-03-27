@@ -1,19 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Card, Button, ProgressBar, Table, Form } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import { createMeal } from "../../utils/API";
+import axios from "axios";
 
 const NutritionTracker = () => {
 
   const userdetails =JSON.parse( localStorage.getItem("user"))
-  const [meals, setMeals] = useState([
-    { id: 1, name: "Oatmeal & Fruits", calories: 250,date:"12-04-2024" },
-    { id: 2, name: "Grilled Chicken & Salad", calories: 400,date:"12-04-2024" },
-    { id: 3, name: "Protein Shake", calories: 200,date:"12-04-2024" },
-  ]);
+  const [meals, setMeals] = useState([]);
   
   const [newMeal, setNewMeal] = useState("");
   const [calories, setCalories] = useState("");
@@ -56,11 +53,36 @@ console.log(formattedDate);
       title: "Confirm Deletion",
       message: "Are you sure you want to delete this meal?",
       buttons: [
-        { label: "Yes", onClick: () => setMeals(meals.filter((meal) => meal.id !== id)) },
+        { label: "Yes", onClick: async () => {
+
+
+         await axios.delete("http://localhost:3001/api/meal/"+id)
+
+         window.location.reload()
+
+        } },
         { label: "No" },
       ],
     });
   };
+
+
+
+    useEffect(()=>{
+
+      //http://localhost:3001/api/meal/67e278674c29efcee7018de6
+
+      const fetchdata = async ()=>{
+
+      const {data} = await axios.get("http://localhost:3001/api/meal/"+userdetails._id)
+      setMeals(data)
+
+      }
+
+      fetchdata()
+
+    },[])
+
 
   return (
     <Container className="py-5">
@@ -96,7 +118,7 @@ console.log(formattedDate);
                       <td>{meal.calories} kcal</td>
                       <td>{meal.date}</td>
                       <td>
-                        <Button variant="danger" size="sm" onClick={() => handleDeleteMeal(meal.id)}>🗑️</Button>
+                        <Button variant="danger" size="sm" onClick={() => handleDeleteMeal(meal._id)}>🗑️</Button>
                       </td>
                     </tr>
                   ))}

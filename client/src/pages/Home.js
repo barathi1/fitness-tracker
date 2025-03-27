@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Auth from "../utils/auth"
 import Container from "react-bootstrap/Container";
 import Header from "../components/Header";
+
+
+import { Button } from "react-bootstrap";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -11,6 +14,16 @@ export default function Home() {
   if(loggedIn){
          navigate("/dashboard")
   }
+
+  
+  const [defaultvalue,setdefaultvalue]=useState(false)
+
+  const handleclick=()=>{
+   
+    setdefaultvalue(defaultvalue?false:true)
+
+  }
+
 
   return (
     <div className="homepage">
