@@ -1,13 +1,31 @@
 // ReminderApp.js
 import React, { useState, useRef, useEffect } from "react";
 
+import "./SleepTracker.css"
 
+import { motion } from "framer-motion";
+import { BsBellFill, BsX } from "react-icons/bs"; 
 
 
 const ReminderApp = ({ reminders }) => {
   const [activeReminders, setActiveReminders] = useState({});
   const timeoutRefs = useRef({});
-  const alarmSound = useRef(new Audio("https://dl.prokerala.com/downloads/ringtones/files/mp3/twirling-intime-lenovo-k8-note-alarm-tone-41440.mp3"));
+
+  function checkConnection() {
+    if (navigator.onLine) {
+      console.log('Internet connection is stable');
+      return true
+    } else {
+      console.log('No active network connection');
+      return false
+    }
+  }
+  
+
+
+  const alarmSound = useRef(new Audio(  checkConnection()?"https://dl.prokerala.com/downloads/ringtones/files/mp3/twirling-intime-lenovo-k8-note-alarm-tone-41440.mp3":"twirling-intime-lenovo-k8-note-alarm-tone-41440.mp3"));
+
+ 
 
   useEffect(() => {
     if (Notification.permission !== "granted") {
@@ -58,24 +76,37 @@ const ReminderApp = ({ reminders }) => {
     });
   };
 
+
+
   return (
-    <div>
-      <h3>Active Reminders</h3>
-      {reminders?.length > 0 ? (
-        reminders?.map((reminder) => (
-          <div key={reminder.id}>
-            <h4>{reminder.title}</h4>
-            {activeReminders[reminder.id] ? (
-              <button onClick={() => stopReminder(reminder.id)} style={{ backgroundColor: "red", color: "white" }}>Stop</button>
-            ) : (
-              <p>Reminder set for {new Date(reminder.time).toLocaleTimeString()}</p>
-            )}
-          </div>
-        ))
-      ) : (
-        <p>No reminders found.</p>
-      )}
-    </div>
+   <motion.div
+      className="reminder-widget"
+      initial={{ x: -100, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h3 className="widget-title">🔔 Reminders</h3>
+      <div className="reminder-list">
+        {reminders?.length > 0 ? (
+          reminders?.map((reminder) => (
+            <motion.div key={reminder.id} className="reminder-item">
+              <BsBellFill className="reminder-icon" />
+              <div className="reminder-info">
+                <h5>{reminder.title}</h5>
+                <p>{new Date(reminder.time).toLocaleTimeString()}</p>
+              </div>
+              {activeReminders[reminder.id] && (
+                <button className="stop-btn" onClick={() => stopReminder(reminder.id)}>
+                  <BsX />
+                </button>
+              )}
+            </motion.div>
+          ))
+        ) : (
+          <p className="no-reminders">No active reminders.</p>
+        )}
+      </div>
+    </motion.div>
   );
 };
 

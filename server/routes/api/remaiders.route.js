@@ -9,7 +9,7 @@ router.post("/", async (req, res) => {
     const { title, time,email } = req.body;
     const newReminder = new Reminder({ title, time,email });
     await newReminder.save();
-    
+
     res.status(201).json(newReminder);
 
   } catch (err) {
@@ -18,9 +18,12 @@ router.post("/", async (req, res) => {
 });
 
 // 📜 Get All Reminders
-router.get("/", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
-    const reminders = await Reminder.find();
+    
+    console.log("hgf");
+    
+    const reminders = await Reminder.find({email:req.params.id});
     res.json(reminders);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch reminders" });

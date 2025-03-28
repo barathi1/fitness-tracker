@@ -1,11 +1,13 @@
 // Reminders.js
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Button, Card, Modal, Form } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { motion } from "framer-motion";
 import ReminderApp from "../sleep/reaminderAlarm";
 
 const Reminders = () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const [show, setShow] = useState(false);
   const now = new Date().toISOString().split("T")[0]; // Correct date format
 
@@ -23,11 +25,47 @@ const Reminders = () => {
 
   const addReminder = () => {
     if (newReminder.title && newReminder.time) {
-      setReminders([...reminders, { id: reminders.length + 1, ...newReminder }]);
+
+      fetch("http://localhost:3001/api/reminders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({...newReminder,email:user.email}),
+      })
+        .then(res => res.json())
+        .then(data => setReminders([...reminders, data]))
+        .catch(err => console.error("Error adding reminder:", err));
+      
+
+      // setReminders([...reminders, { id: reminders.length + 1, ...newReminder }]);
       setNewReminder({ title: "", time: "" });
       setShow(false);
     }
+
+
+
+
+
+
   };
+
+  const deleteReminder = (id) => {
+    fetch(`http://localhost:3001/api/reminders/${id}`, { method: "DELETE" })
+      .then(() => setReminders(reminders.filter(reminder => reminder._id !== id)))
+      .catch(err => console.error("Error deleting reminder:", err));
+  };
+  
+
+
+
+ 
+
+useEffect(() => {
+  fetch("http://localhost:3001/api/reminders/"+user.email)
+    .then(res => res.json())
+    .then(data => setReminders(data))
+    .catch(err => console.error("Error fetching reminders:", err));
+}, []);
+
 
   
 
@@ -42,17 +80,19 @@ const Reminders = () => {
       <Row className="justify-content-center">
         <ReminderApp reminders={reminders} />
         {reminders.map((reminder) => (
-          <Col md={4} key={reminder.id} className="mb-4">
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
-              <Card className="shadow-lg border-0 bg-light">
-                <Card.Body>
-                  <Card.Title className="fw-bold text-primary">{reminder.title}</Card.Title>
-                  <Card.Text className="text-muted">⏰ {new Date(reminder.time).toLocaleTimeString()}</Card.Text>
-                </Card.Body>
-              </Card>
-            </motion.div>
-          </Col>
-        ))}
+  <Col md={4} key={reminder.id} className="mb-4">
+    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
+      <Card className="shadow-lg border-0 bg-light">
+        <Card.Body>
+          <Card.Title className="fw-bold text-primary">{reminder.title}</Card.Title>
+          <Card.Text className="text-muted">⏰ {new Date(reminder.time).toLocaleTimeString()}</Card.Text>
+          <Button variant="danger" size="sm" onClick={() => deleteReminder(reminder._id)}>❌ Delete</Button>
+        </Card.Body>
+      </Card>
+    </motion.div>
+  </Col>
+))}
+
       </Row>
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>

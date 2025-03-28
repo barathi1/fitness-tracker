@@ -13,7 +13,6 @@ router.use("/meal", MealRoute);
 router.use("/goal",Goalroute );
 router.use("/water",water);
 router.use("/sleep",sleep);
-
-router.use("/remaiders",remaiders);
+router.use("/reminders",remaiders);
 
 module.exports = router;
