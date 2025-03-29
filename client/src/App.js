@@ -45,7 +45,7 @@ function App() {
         <Route path="/exercise/resistance" element={<Resistance />} />
       
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/workout" element={<WorkoutTracker />} />
+        <Route path="/workout" element={<History />} />
         <Route path="/nutrition" element={<NutritionTracker />} />
 
         <Route path="/water" element={<WaterTracker />} />

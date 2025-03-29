@@ -4,11 +4,8 @@ module.exports = {
 
   async createMeal({ body }, res) {
     try {
-       
-    
         // Create new meal object
         const userMeal = new Meal(body);
-    
         // Save to database
         await userMeal.save();
     

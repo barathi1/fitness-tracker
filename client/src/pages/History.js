@@ -1,124 +1,131 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { getMe } from '../utils/API';
-import Auth from "../utils/auth"
+import Auth from "../utils/auth";
 import { formatDate } from '../utils/dateFormat';
-import Header from "../components/Header";
-import cardioIcon from "../assets/images/cardio.png"
-import resistanceIcon from "../assets/images/resistance.png"
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { Card, CardContent, Typography, Box, Fade } from "@mui/material";
+import { motion } from "framer-motion";
+import cardioIcon from "../assets/images/cardio.png";
+import resistanceIcon from "../assets/images/resistance.png";
 
 export default function History() {
   const [userData, setUserData] = useState({});
-  const [exerciseData, setExerciseData] = useState([])
+  const [exerciseData, setExerciseData] = useState([]);
   const [displayedItems, setDisplayedItems] = useState(6);
+  const [weeklyData, setWeeklyData] = useState([]);
+  const [monthlyData, setMonthlyData] = useState([]);
 
   const loggedIn = Auth.loggedIn();
   let currentDate;
 
-  // everytime loggedIn/userdata changes, the getuserdata runs
   useEffect(() => {
     const getUserData = async () => {
       try {
-        //get token
         const token = loggedIn ? Auth.getToken() : null;
-        if (!token) return false;
+        if (!token) return;
 
-        const response = await getMe(token)
+        const response = await getMe(token);
+        if (!response.ok) throw new Error("Something went wrong!");
 
-        if (!response.ok) {
-          throw new Error("something went wrong!")
-        }
-
-        const user = await response.json()
-
-        // combine cardio and resistance data together
+        const user = await response.json();
         if (user.cardio && user.resistance) {
-          const cardio = user.cardio;
-          const resistance = user.resistance;
-          const exercise = cardio.concat(resistance);
-
-          // sort exercise data by date
-          exercise.sort((a, b) => {
-            return new Date(b.date) - new Date(a.date)
-          })
-
-          //format date in exercise data
-          exercise.forEach(item => {
-            item.date = formatDate(item.date)
-          });
+          const exercise = [...user.cardio, ...user.resistance];
+          exercise.sort((a, b) => new Date(b.date) - new Date(a.date));
+          exercise.forEach(item => item.date = formatDate(item.date));
 
           setUserData(user);
-          setExerciseData(exercise)
+          setExerciseData(exercise);
+          calculateProgress(exercise);
         }
-      } catch (err) { console.error(err) }
+      } catch (err) { console.error(err); }
     };
     getUserData();
-  }, [loggedIn, userData])
+  }, [loggedIn]);
 
-  function showMoreItems() {
-    setDisplayedItems(displayedItems + 6);
-  }
+  const calculateProgress = (data) => {
+    const weekly = {};
+    const monthly = {};
+    data.forEach(({ date, type }) => {
+      const week = date.slice(0, 7);
+      const month = date.slice(0, 7);
 
+      weekly[week] = (weekly[week] || 0) + 1;
+      monthly[month] = (monthly[month] || 0) + 1;
+    });
+    setWeeklyData(Object.entries(weekly).map(([key, value]) => ({ week: key, count: value })));
+    setMonthlyData(Object.entries(monthly).map(([key, value]) => ({ month: key, count: value })));
+  };
 
-  // If the user is not logged in, redirect to the login page
-  if (!loggedIn) {
-    return <Navigate to="/login" />;
-  }
+  function showMoreItems() { setDisplayedItems(displayedItems + 6); }
+  if (!loggedIn) return <Navigate to="/login" />;
 
   return (
-    <div className='history'>
-      {/* <Header /> */}
-      <div className="d-flex flex-column align-items-center">
-        <h2 className='title'>History</h2>
-        {exerciseData.length ?
-          (<div className='history-data'>
-            {/* map the exercise data  */}
-            {exerciseData.slice(0, displayedItems).map((exercise) => {
+    <>
+    {/*  style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"100px",}} */}
+      <div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"100px",}}>
+        <div className='history-container'>
+          <h2 className='title'>Exercise History</h2>
+          <div className='progress-section'>
+            <div className='progress-chart'>
+              <h3>Weekly Progress</h3>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={weeklyData}>
+                  <XAxis dataKey="week" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="count" fill="#4CAF50" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div className='progress-chart'>
+              <h3>Monthly Progress</h3>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={monthlyData}>
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="count" fill="#FF9800" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          <div className='history-data'>
+            {exerciseData.slice(0, displayedItems).map((exercise, index) => {
               let dateToDisplay;
               if (exercise.date !== currentDate) {
                 currentDate = exercise.date;
                 dateToDisplay = exercise.date;
               }
               return (
-                <div className='history-div d-flex' key={exercise._id}>
-                  <div className='date d-flex align-items-center'>{dateToDisplay}</div>
-                  <Link className='text-decoration-none' to={`/history/${exercise.type}/${exercise._id}`}>
-                    {exercise.type === "cardio" ? (
-                      <div className="history-card cardio-title d-flex">
-                        <div className='d-flex align-items-center'><img alt="cardio" src={cardioIcon} className="history-icon" /></div>
-                        <div>
-                          <p className='history-name'>{exercise.name}</p>
-                          <p className='history-index'>{exercise.distance} miles </p>
-                        </div>
-                      </div>) : (
-                      <div className="history-card resistance-title d-flex">
-                        <div className='d-flex align-items-center'><img alt="resistance" src={resistanceIcon} className="history-icon" /></div>
-                        <div >
-                          <p className='history-name'>{exercise.name}</p>
-                          <p className='history-index'>{exercise.weight} pounds </p>
-                        </div>
-                      </div>)}
-                  </Link>
-                </div>
-              )
+                <Fade in={true} timeout={500} key={exercise._id}>
+                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: index * 0.1 }}>
+                    <Box sx={{ mb: 2 }}>
+                      {dateToDisplay && <Typography variant="h6" sx={{ color: '#1976D2', mb: 1 }}>{dateToDisplay}</Typography>}
+                      <Link to={`/history/${exercise.type}/${exercise._id}`} style={{ textDecoration: 'none' }}>
+                        <Card sx={{ display: 'flex', alignItems: 'center', p: 2, boxShadow: 3, '&:hover': { boxShadow: 6 } }}>
+                          <img alt={exercise.type} src={exercise.type === "cardio" ? cardioIcon : resistanceIcon} style={{ width: 50, height: 50, marginRight: 10 }} />
+                          <CardContent>
+                            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{exercise.name}</Typography>
+                            <Typography variant="body2" sx={{ color: 'gray' }}>
+                              {exercise.type === "cardio" ? `${exercise.distance} miles` : `${exercise.weight} lbs`}
+                            </Typography>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    </Box>
+                  </motion.div>
+                </Fade>
+              );
             })}
-            {/* show more items  */}
-            {exerciseData.length > displayedItems ?
-              (<div className='d-flex justify-content-center'>
-                <button className='show-btn' onClick={showMoreItems}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2" strokeLinejoin="round"><path d="M6 9l6 6 6-6" /></svg>
-                  Show More
-                </button>
-              </div>)
-              : null}
-          </div>)
-          :
-          (<div>
-            <h3 className='history-text'>No exercise data yet...</h3>
-            <Link to="/exercise"><button className='home-btn'>Add Exercise</button></Link>
+            {exerciseData.length > displayedItems && (
+              <button className='show-more' onClick={showMoreItems}>Show More</button>
+            )}
           </div>
-          )}
-      </div >
-    </div >
-  )
+        </div>
+      </div>
+
+    </>
+  );
 }
+

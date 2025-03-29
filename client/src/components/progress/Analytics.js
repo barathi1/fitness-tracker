@@ -1,16 +1,29 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Container, Row, Col, Card } from "react-bootstrap";
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
-import { FaDumbbell, FaAppleAlt, FaWater, FaBed, FaChartLine } from "react-icons/fa";
+import {
+  Container,
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  IconButton,
+} from "@mui/material";
 
-const API_URL = "http://localhost:3001/api/progress"; // Change this to your deployed backend URL if needed
+import { FaDumbbell, FaAppleAlt, FaBed, FaChartLine } from "react-icons/fa";
+// import SearchIcon from "@mui/icons-material/Search";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, LineChart, Line } from "recharts";
+import ProgressTables from "./table";
+
 
 const ProgressAnalytics = () => {
-  const [progressData, setProgressData] = useState([]);
-  const [caloriesData, setCaloriesData] = useState([]);
-  const [weightData, setWeightData] = useState([]);
+  const [progressData, setProgressData] = useState({});
+  const [filteredData, setFilteredData] = useState({});
+  const [search, setSearch] = useState("");
+  const user = JSON.parse(localStorage.getItem("user"));
 
+  
+  const API_URL = "http://localhost:3001/api/progress/"+user._id;
   useEffect(() => {
     fetchProgressData();
   }, []);
@@ -18,81 +31,102 @@ const ProgressAnalytics = () => {
   const fetchProgressData = async () => {
     try {
       const response = await axios.get(API_URL);
-      setProgressData(response.data);
-
-      // Convert response data to match chart format
-      const formattedCaloriesData = response.data.map((entry, index) => ({
-        name: `Day ${index + 1}`,
-        calories: entry.caloriesBurned,
-      }));
-
-      const formattedWeightData = response.data.map((entry, index) => ({
-        day: `Week ${index + 1}`,
-        weight: 80 - index * 2, // Example weight loss trend (modify based on actual data)
-      }));
-
-      setCaloriesData(formattedCaloriesData);
-      setWeightData(formattedWeightData);
+      setProgressData(response.data.progress);
+      setFilteredData(response.data.progress);
     } catch (error) {
       console.error("Error fetching progress data:", error);
     }
   };
 
+  const handleSearch = (event) => {
+    const keyword = event.target.value.toLowerCase();
+    setSearch(keyword);
+    filterData(keyword);
+  };
+
+  const filterData = (keyword) => {
+    const newData = { ...progressData };
+    if (keyword) {
+      Object.keys(newData).forEach((key) => {
+        newData[key] = newData[key].filter((item) =>
+          item.name?.toLowerCase().includes(keyword) || item.title?.toLowerCase().includes(keyword)
+        );
+      });
+    }
+    setFilteredData(newData);
+  };
+
   return (
-    <Container className="mt-4">
-      <h2 className="text-center mb-4" style={{ color: "#007bff", fontWeight: "bold" }}>
+    <Container maxWidth="lg" sx={{ mt: 4 }}>
+      <Typography variant="h4" align="center" fontWeight="bold" color="primary" mb={3}>
         <FaChartLine /> Progress Analytics
-      </h2>
+      </Typography>
 
-      <Row className="g-4">
-        <Col md={3}>
-          <Card className="shadow-lg text-center border-primary">
-            <Card.Body>
+      {/* Search */}
+      <Grid container spacing={2} mb={3}>
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            variant="outlined"
+            label="Search"
+            value={search}
+            onChange={handleSearch}
+            InputProps={{
+              endAdornment: (
+                <IconButton>
+                  {/* <SearchIcon /> */}
+                </IconButton>
+              ),
+            }}
+          />
+        </Grid>
+      </Grid>
+
+      {/* Cards */}
+      <Grid container spacing={3}>
+        <Grid item xs={12} sm={4}>
+          <Card sx={{ textAlign: "center", boxShadow: 3 }}>
+            <CardContent>
               <FaDumbbell size={50} color="#007bff" />
-              <h5 className="mt-2">Workouts</h5>
-              <p className="text-muted">Calories Burned: {progressData.reduce((acc, entry) => acc + entry.caloriesBurned, 0)}+</p>
-            </Card.Body>
+              <Typography variant="h6">Workouts</Typography>
+              <Typography color="textSecondary">
+                {filteredData.cardio?.length || 0} Cardio Sessions
+              </Typography>
+            </CardContent>
           </Card>
-        </Col>
-
-        <Col md={3}>
-          <Card className="shadow-lg text-center border-success">
-            <Card.Body>
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <Card sx={{ textAlign: "center", boxShadow: 3 }}>
+            <CardContent>
               <FaAppleAlt size={50} color="green" />
-              <h5 className="mt-2">Nutrition</h5>
-              <p className="text-muted">Healthy Meals: {progressData.reduce((acc, entry) => acc + entry.healthyMeals, 0)}+</p>
-            </Card.Body>
+              <Typography variant="h6">Nutrition</Typography>
+              <Typography color="textSecondary">
+                {filteredData.nutritionTracking?.length || 0} Meals Tracked
+              </Typography>
+            </CardContent>
           </Card>
-        </Col>
-
-        <Col md={3}>
-          <Card className="shadow-lg text-center border-info">
-            <Card.Body>
-              <FaWater size={50} color="#17a2b8" />
-              <h5 className="mt-2">Hydration</h5>
-              <p className="text-muted">Water Intake: {progressData.reduce((acc, entry) => acc + entry.waterIntake, 0)}L+</p>
-            </Card.Body>
-          </Card>
-        </Col>
-
-        <Col md={3}>
-          <Card className="shadow-lg text-center border-warning">
-            <Card.Body>
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <Card sx={{ textAlign: "center", boxShadow: 3 }}>
+            <CardContent>
               <FaBed size={50} color="#ffc107" />
-              <h5 className="mt-2">Sleep</h5>
-              <p className="text-muted">Avg Sleep: {progressData.length > 0 ? (progressData.reduce((acc, entry) => acc + entry.sleepHours, 0) / progressData.length).toFixed(1) : 0} hrs</p>
-            </Card.Body>
+              <Typography variant="h6">Sleep</Typography>
+              <Typography color="textSecondary">
+                Avg Sleep: {filteredData.sleep?.length > 0 ? (filteredData.sleep.reduce((acc, item) => acc + item.sleepHours, 0) / filteredData.sleep.length).toFixed(1) : 0} hrs
+              </Typography>
+            </CardContent>
           </Card>
-        </Col>
-      </Row>
+        </Grid>
+      </Grid>
 
-      <Row className="mt-4">
-        <Col md={6}>
-          <Card className="shadow-lg">
-            <Card.Body>
-              <h5 className="text-center">Calories Burned This Week</h5>
+      {/* Charts */}
+      <Grid container spacing={3} mt={4}>
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" align="center">Calories Intake</Typography>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={caloriesData}>
+                <BarChart data={filteredData.nutritionTracking || []}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
@@ -100,27 +134,29 @@ const ProgressAnalytics = () => {
                   <Bar dataKey="calories" fill="#007bff" />
                 </BarChart>
               </ResponsiveContainer>
-            </Card.Body>
+            </CardContent>
           </Card>
-        </Col>
-
-        <Col md={6}>
-          <Card className="shadow-lg">
-            <Card.Body>
-              <h5 className="text-center">Weight Progress</h5>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" align="center">Sleep Trends</Typography>
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={weightData}>
+                <LineChart data={filteredData.sleep || []}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="day" />
+                  <XAxis dataKey="date" />
                   <YAxis />
                   <Tooltip />
-                  <Line type="monotone" dataKey="weight" stroke="green" strokeWidth={3} />
+                  <Line type="monotone" dataKey="sleepHours" stroke="green" strokeWidth={3} />
                 </LineChart>
               </ResponsiveContainer>
-            </Card.Body>
+            </CardContent>
           </Card>
-        </Col>
-      </Row>
+        </Grid>
+      </Grid>
+{/* tables */}
+<ProgressTables/>
+
     </Container>
   );
 };

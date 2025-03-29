@@ -37,7 +37,7 @@ db.once("open", () => {
 
 // ✅ Moved app.listen() outside db.once() to ensure the server starts
 app.use(routes);
-// app.use("/api/progress", progressRoutes);
+// app.use("/progress", progressRoutes);
 
 
 app.get("/test", (req, res) => {
