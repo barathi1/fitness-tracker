@@ -93,18 +93,22 @@ const FitnessPlan = () => {
       </Card>
 
       {plan && (
-        <Card className="mt-4" sx={{display:"flex",
+        <Card className="mt-4" sx={{
+          display:"flex",
           flexDirection:"column",
           alignItems:"center",
           justifyContent:"center"
         }}>
-          <CardContent sx={{display:"flex",
+          <CardContent sx={{
+          display:"flex",
           flexDirection:"column",
           alignItems:"center",
           justifyContent:"center"
         }}>
             <h3 className="text-lg font-semibold">Your 30-Day Plan</h3>
-            <pre className="whitespace-pre-wrap text-sm " style={{backgroundColor:"lightblue"}}>{plan}</pre>
+            <pre className="whitespace-pre-wrap text-sm " style={{backgroundColor:"lightblue",
+              padding:"50px",fontWeight:"bold"
+            }}>{plan}</pre>
             <Button onClick={downloadPDF} className="bg-blue-500 mt-4 w-full">
               Download as PDF
             </Button>
