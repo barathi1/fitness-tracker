@@ -1,6 +1,7 @@
 import React from "react";
 // rename browserRouter as router
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import "bootstrap/dist/css/bootstrap.min.css";  
 
 // import pages and components

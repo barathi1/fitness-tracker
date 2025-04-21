@@ -106,11 +106,13 @@ const FitnessPlan = () => {
           justifyContent:"center"
         }}>
             <h3 className="text-lg font-semibold">Your 30-Day Plan</h3>
-            <pre className="whitespace-pre-wrap text-sm " style={{backgroundColor:"lightblue",
-              padding:"50px",fontWeight:"bold"
+            <pre className="whitespace-pre-wrap text-sm " style={{
+              backgroundColor:"lightblue",
+              padding:"50px",
+              fontWeight:"bold"
             }}>{plan}</pre>
             <Button onClick={downloadPDF} className="bg-blue-500 mt-4 w-full">
-              Download as PDF
+              Download as PDF 
             </Button>
           </CardContent>
         </Card>

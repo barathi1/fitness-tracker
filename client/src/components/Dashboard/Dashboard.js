@@ -6,7 +6,8 @@ import "./Dashboard.css";
 
 const Dashboard = () => {
   
-  const userName = "Vicky"; // Dynamic name from authentication (Replace with user context)
+  const userdetails =JSON.parse( localStorage.getItem("user"))
+  const userName = userdetails.username; // Dynamic name from authentication (Replace with user context)
   
   return (
     <Container fluid className="dashboard-container">
